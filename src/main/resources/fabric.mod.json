@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "mumblelink",
+  "version": "${version}",
+  "name": "MumbleLink",
+  "icon": "assets/mumblelink/icon.png",
+  "description": "A mod that natively supports Mumble's positional audio feature.",
+  "authors": [
+    "kubbidev"
+  ],
+  "license": "CC BY-NC-SA 4.0",
+  "contact": {
+    "issues": "https://gitlab.com/kubbidev/mumblelink/-/issues"
+  },
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.kubbidev.mumble.MumbleLinkMod"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "mumblelink.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "minecraft": "~1.20.4"
+  }
+}
