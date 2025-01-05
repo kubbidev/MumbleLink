@@ -5,8 +5,9 @@ import java.io.ByteArrayOutputStream
 plugins {
     id("java")
     id("java-library")
-    alias(libs.plugins.shadow)
     alias(libs.plugins.loom)
+    alias(libs.plugins.shadow)
+    id("maven-publish")
 }
 
 group = "me.kubbidev"
@@ -20,6 +21,32 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    minecraft("com.mojang:minecraft:1.20.4")
+    mappings("net.fabricmc:yarn:1.20.4+build.3:v2")
+    modImplementation("net.fabricmc:fabric-loader:0.16.9")
+
+    val apiModules = listOf(
+        "fabric-api"
+    )
+
+    apiModules.forEach {
+        modImplementation(fabricApi.module(it, "0.97.2+1.20.4"))
+    }
+
+    // test
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.4")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.4")
+    testImplementation("org.mockito:mockito-core:5.14.2")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
 }
 
 fun determinePatchVersion(): Int {
@@ -42,41 +69,62 @@ val patchVersion = determinePatchVersion()
 val releaseVersion = "$majorVersion.$minorVersion"
 val projectVersion = "$releaseVersion.$patchVersion"
 
-repositories {
-    mavenCentral()
-}
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "mumblelink"
+            version = releaseVersion
 
-dependencies {
-    minecraft("com.mojang:minecraft:1.20.4")
-    mappings("net.fabricmc:yarn:1.20.4+build.3:v2")
-    modImplementation("net.fabricmc:fabric-loader:0.16.9")
+            from(components["java"])
+            pom {
+                name = "MumbleLink"
+                description = "A mod that natively supports Mumble's positional audio feature."
+                url = "https://gitlab.com/kubbidev/mumblelink"
 
-    val apiModules = listOf(
-        "fabric-api"
-    )
+                licenses {
+                    license {
+                        name = "CC BY-NC-SA 4.0"
+                        url = "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                    }
+                }
 
-    apiModules.forEach {
-        modImplementation(fabricApi.module(it, "0.97.2+1.20.4"))
+                developers {
+                    developer {
+                        id = "kubbidev"
+                        name = "kubbi"
+                        url = "https://kubbidev.me"
+                    }
+                }
+
+                issueManagement {
+                    system = "Gitlab"
+                    url = "https://gitlab.com/kubbidev/mumblelink/-/issues"
+                }
+            }
+        }
     }
+    repositories {
+        maven(url = "https://nexus.kubbidev.me/repository/maven-releases/") {
+            name = "kubbidev-releases"
+            credentials(PasswordCredentials::class) {
+                username = System.getenv("GRADLE_KUBBIDEV_RELEASES_USER")
+                    ?: property("kubbidev-releases-user") as String?
 
-    // tests
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
-    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
+                password = System.getenv("GRADLE_KUBBIDEV_RELEASES_PASS")
+                    ?: property("kubbidev-releases-pass") as String?
+            }
+        }
+    }
 }
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
-tasks.withType<Test>().configureEach {
-    testLogging {
-        events = setOf(TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.SKIPPED)
+tasks.processResources {
+    inputs.property("version", projectVersion)
+    filesMatching("**/fabric.mod.json") {
+        expand("version" to projectVersion)
     }
 }
 
@@ -105,6 +153,20 @@ val remappedShadowJar by tasks.registering(RemapJarTask::class) {
 
 tasks.assemble {
     dependsOn(remappedShadowJar)
+}
+
+tasks.publish {
+    dependsOn(tasks.shadowJar)
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+tasks.withType<Test>().configureEach {
+    testLogging {
+        events = setOf(TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.SKIPPED)
+    }
 }
 
 artifacts {
