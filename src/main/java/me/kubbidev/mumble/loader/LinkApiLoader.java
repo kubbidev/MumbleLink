@@ -6,15 +6,18 @@ import com.sun.jna.Platform;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import me.kubbidev.mumble.MumbleLinkMod;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import org.jetbrains.annotations.NotNull;
 import me.kubbidev.mumble.jna.LinkApi;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Map;
 
+@Environment(EnvType.CLIENT)
 public class LinkApiLoader implements ApiLoader {
     public static final LinkApiLoader INSTANCE = new LinkApiLoader();
 
@@ -23,6 +26,9 @@ public class LinkApiLoader implements ApiLoader {
 
     /** A mapping that associates platform-specific identifiers with corresponding library file names. */
     private static final Int2ObjectMap<String> PLATFORM_FILES_MAPPING;
+
+    /** Represents the name of the library that this loader is designed to handle. */
+    private static final String LIBRARY_NAME = "LinkAPI";
 
     static {
         PLATFORM_FOLDERS_MAPPING = Int2ObjectMaps.unmodifiable(new Int2ObjectOpenHashMap<>(Map.of(
@@ -37,7 +43,8 @@ public class LinkApiLoader implements ApiLoader {
     private LinkApiLoader() {}
 
     @Override
-    public @NotNull LinkApi load(String name) throws UnsatisfiedLinkError {
+    public @NotNull LinkApi load() throws UnsatisfiedLinkError {
+        String name = LIBRARY_NAME;
         var unpackedFile = unpackLibrary(name);
         if (unpackedFile != null && unpackedFile.exists()) {
             NativeLibrary.addSearchPath(name, unpackedFile.getAbsolutePath());
@@ -88,7 +95,7 @@ public class LinkApiLoader implements ApiLoader {
     }
 
     private File extractAsTemp(String resource, String fileName) throws IOException {
-        File tempRoot = File.createTempFile("MumbleLink", "native");
+        File tempRoot = File.createTempFile(me.kubbidev.mumble.api.Platform.getName(), "native");
 
         String tempPath = tempRoot.getAbsolutePath();
         if (!tempRoot.delete() || !new File(tempPath).mkdirs()) {

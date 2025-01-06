@@ -23,6 +23,7 @@ public interface ExceptionHandler {
     void handleStatus(UpdateStatus status);
 
     @FunctionalInterface
+    @Environment(EnvType.CLIENT)
     interface Identifiable {
         int getId();
     }

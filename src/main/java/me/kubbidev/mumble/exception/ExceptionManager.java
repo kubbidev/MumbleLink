@@ -1,15 +1,19 @@
 package me.kubbidev.mumble.exception;
 
-import net.minecraft.text.Text;
+import me.kubbidev.mumble.api.Platform;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import me.kubbidev.mumble.MumbleLinkMod;
-import me.kubbidev.mumble.sender.BufferedSender;
-import me.kubbidev.mumble.sender.Sender;
+import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.toast.ToastManager;
+import net.minecraft.text.Text;
 
+@Environment(EnvType.CLIENT)
 public class ExceptionManager implements ExceptionHandler {
-    private final Sender sender;
+    private final MumbleLinkMod mod;
 
     public ExceptionManager(MumbleLinkMod mod) {
-        this.sender = new BufferedSender(mod);
+        this.mod = mod;
     }
 
     @Override
@@ -19,8 +23,16 @@ public class ExceptionManager implements ExceptionHandler {
 
     @Override
     public void handleStatus(InitStatus status) {
+        MumbleLinkMod.LOGGER.info("Init status: {} ({})", status.getId(), status);
+
         if (status == InitStatus.LINKED) {
-            this.sender.sendMessage(Text.literal("Mumble linked."));
+            this.mod.getClient().ifPresent(client -> {
+                ToastManager toastManager = client.getToastManager();
+
+                SystemToast.add(toastManager, SystemToast.Type.PERIODIC_NOTIFICATION,
+                        Text.literal(Platform.getName()),
+                        Text.translatable("feature.mumblelink.status.toast.linked"));
+            });
         }
     }
 

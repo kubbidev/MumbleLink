@@ -2,6 +2,8 @@ package me.kubbidev.mumble.jna;
 
 import com.sun.jna.Library;
 import com.sun.jna.Structure;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -16,6 +18,7 @@ import java.util.List;
  * It enables the configuration and updating of context, identity, positional data, and more
  * for Mumble's integration.
  */
+@Environment(EnvType.CLIENT)
 public interface LinkApi extends Library {
 
     /** Represents the fixed length of a vector in a system or calculation */
@@ -224,7 +227,7 @@ public interface LinkApi extends Library {
         public byte[] context = new byte[MAX_CONTEXT_LENGTH];
 
         /** C type : wchar_t[2048] */
-        public char[] lore = new char[MAX_LORE_LENGTH];
+        public char[] description = new char[MAX_LORE_LENGTH];
 
         @Override
         protected List<String> getFieldOrder() {
@@ -244,10 +247,12 @@ public interface LinkApi extends Library {
                     "description");
         }
 
-        public static class ByReference extends LinkedMem implements Structure.ByReference {
+        public static class ByReference extends LinkedMem
+                implements Structure.ByReference {
         }
 
-        public static class ByValue extends LinkedMem implements Structure.ByValue {
+        public static class ByValue extends LinkedMem
+                implements Structure.ByValue {
         }
 
     }

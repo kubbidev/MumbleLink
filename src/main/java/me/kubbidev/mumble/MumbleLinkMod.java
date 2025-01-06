@@ -9,8 +9,6 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import me.kubbidev.mumble.scheduler.FabricJavaScheduler;
-import me.kubbidev.mumble.scheduler.SchedulerAdapter;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -32,11 +30,6 @@ public final class MumbleLinkMod implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     /**
-     * A scheduler adapter for the platform
-     */
-    private final SchedulerAdapter schedulerAdapter;
-
-    /**
      * The time when the mod was enabled
      */
     private Instant startTime;
@@ -49,15 +42,7 @@ public final class MumbleLinkMod implements ClientModInitializer {
     // init during enable
     private MumbleTicker mumbleTicker;
 
-    public MumbleLinkMod() {
-        this.schedulerAdapter = new FabricJavaScheduler(this);
-    }
-
     // provide adapters
-
-    public SchedulerAdapter getScheduler() {
-        return this.schedulerAdapter;
-    }
 
     public Instant getStartTime() {
         return this.startTime;
@@ -73,6 +58,7 @@ public final class MumbleLinkMod implements ClientModInitializer {
     }
 
     private void onClientStarted(MinecraftClient client) {
+        this.client = client;
         this.startTime = Instant.now();
 
         // register the mumble link provider
@@ -90,17 +76,11 @@ public final class MumbleLinkMod implements ClientModInitializer {
     private void onClientStopping(MinecraftClient client) {
         LOGGER.info("Starting shutdown process...");
 
-        // cancel delayed/repeating tasks
-        getScheduler().shutdownScheduler();
-
         // disable ticking
         this.mumbleTicker.disable();
 
         // unregister provider
         MumbleLinkModProvider.unregister();
-
-        // shutdown async executor pool
-        getScheduler().shutdownExecutor();
 
         this.client = null;
         LOGGER.info("Goodbye!");

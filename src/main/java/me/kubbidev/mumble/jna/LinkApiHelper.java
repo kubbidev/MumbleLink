@@ -1,11 +1,14 @@
 package me.kubbidev.mumble.jna;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Objects;
 
+@Environment(EnvType.CLIENT)
 public final class LinkApiHelper {
     private LinkApiHelper() {}
 
