@@ -7,8 +7,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 
 @Environment(EnvType.CLIENT)
-public final class Platform {
-    private Platform() {}
+public final class Env {
+    private Env() {}
 
     @ApiStatus.Internal
     public static String getName() {

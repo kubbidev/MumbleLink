@@ -1,5 +1,6 @@
 package me.kubbidev.mumble;
 
+import me.kubbidev.mumble.api.Module;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -8,18 +9,19 @@ import net.minecraft.client.MinecraftClient;
 import org.jetbrains.annotations.Nullable;
 import me.kubbidev.mumble.exception.ExceptionHandler;
 import me.kubbidev.mumble.exception.ExceptionManager;
-import me.kubbidev.mumble.loader.LinkApiLoader;
+import me.kubbidev.mumble.loader.StructureLoader;
 import me.kubbidev.mumble.jna.LinkApiHelper;
 import me.kubbidev.mumble.jna.LinkApi;
 
 @Environment(EnvType.CLIENT)
-public final class MumbleLoader implements ClientTickEvents.EndTick {
+public final class MumbleLoader implements ClientTickEvents.EndTick, Module {
 
     public static final String PLUGIN_NAME = "Minecraft";
     public static final String PLUGIN_LORE = "Minecraft (1.20.4)";
     public static final int PLUGIN_UI_VERSION = 2;
 
-    private final MumblePos mumblePos;
+    // Initialize the mumble position defaults
+    private final MumblePos mumblePos = new MumblePos(this);
     private LinkApi api;
 
     private ExceptionHandler.InitStatus result
@@ -33,18 +35,33 @@ public final class MumbleLoader implements ClientTickEvents.EndTick {
     public MumbleLoader(MumbleLinkMod mod) {
         this.exceptionManager = new ExceptionManager(mod);
         try {
-            // load the api
-            this.api = LinkApiLoader.INSTANCE.load();
+            // unpack the api from resources
+            this.api = StructureLoader.instantiateStructure(
+                    MumbleLinkConstants.LIBRARY_NAME);
+
         } catch (Throwable t) {
             this.exceptionManager.handleException(t);
         }
+    }
 
+    public LinkApi getApi() {
+        return this.api;
+    }
+
+    public ExceptionManager getExceptionManager() {
+        return this.exceptionManager;
+    }
+
+    @Override
+    public void enable() {
         // Register the event to ensure the connection
         ClientPlayConnectionEvents.JOIN.register(
                 (handler, sender, client) -> this.ensureMumbleConnected());
+    }
 
-        // Initialize the mumble position defaults
-        this.mumblePos = new MumblePos(this.api, this.exceptionManager);
+    @Override
+    public void disable() {
+        // ignore
     }
 
     @Override

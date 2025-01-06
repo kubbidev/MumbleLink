@@ -41,6 +41,7 @@ public final class MumbleLinkMod implements ClientModInitializer {
 
     // init during enable
     private MumbleTicker mumbleTicker;
+    private MumbleLoader mumbleLoader;
 
     // provide adapters
 
@@ -64,8 +65,12 @@ public final class MumbleLinkMod implements ClientModInitializer {
         // register the mumble link provider
         MumbleLinkModProvider.register(this);
 
+        // enable the mumble loader events
+        this.mumbleLoader = new MumbleLoader(this);
+        this.mumbleLoader.enable();
+
         // enable the mumble position ticker
-        this.mumbleTicker = new MumbleTicker(this);
+        this.mumbleTicker = new MumbleTicker(this.mumbleLoader);
         this.mumbleTicker.enable();
 
         // successfully print the time taken when loading the mod!
@@ -78,6 +83,9 @@ public final class MumbleLinkMod implements ClientModInitializer {
 
         // disable ticking
         this.mumbleTicker.disable();
+
+        // disable the mumble loader
+        this.mumbleLoader.disable();
 
         // unregister provider
         MumbleLinkModProvider.unregister();

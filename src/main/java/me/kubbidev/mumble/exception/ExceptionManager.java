@@ -1,6 +1,6 @@
 package me.kubbidev.mumble.exception;
 
-import me.kubbidev.mumble.api.Platform;
+import me.kubbidev.mumble.api.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import me.kubbidev.mumble.MumbleLinkMod;
@@ -30,7 +30,7 @@ public class ExceptionManager implements ExceptionHandler {
                 ToastManager toastManager = client.getToastManager();
 
                 SystemToast.add(toastManager, SystemToast.Type.PERIODIC_NOTIFICATION,
-                        Text.literal(Platform.getName()),
+                        Text.literal(Env.getName()),
                         Text.translatable("feature.mumblelink.status.toast.linked"));
             });
         }

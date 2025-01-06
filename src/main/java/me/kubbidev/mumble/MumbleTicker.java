@@ -11,8 +11,8 @@ public final class MumbleTicker implements Module, ClientTickEvents.EndTick {
     private final MumbleLoader loader;
     private boolean enabled = false;
 
-    public MumbleTicker(MumbleLinkMod mod) {
-        this.loader = new MumbleLoader(mod);
+    public MumbleTicker(MumbleLoader loader) {
+        this.loader = loader;
     }
 
     @Override
