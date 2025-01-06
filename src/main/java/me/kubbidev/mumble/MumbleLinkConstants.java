@@ -9,4 +9,7 @@ public final class MumbleLinkConstants {
     }
 
     public static final String MUMBLE_CONTEXT_DOMAIN = "AllTalk";
+
+    /** Represents the name of the library that this loader is designed to handle. */
+    public static final String LIBRARY_NAME = "LinkAPI";
 }

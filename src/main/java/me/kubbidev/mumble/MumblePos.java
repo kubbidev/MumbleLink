@@ -17,8 +17,7 @@ import me.kubbidev.mumble.jna.LinkApi;
 
 @Environment(EnvType.CLIENT)
 public final class MumblePos {
-    private final LinkApi api;
-    private final ExceptionHandler exceptionHandler;
+    private final MumbleLoader loader;
 
     private int uiTick = 0;
     private String identity; // [256]
@@ -39,9 +38,8 @@ public final class MumblePos {
     private float[] fCameraTop
             = {0, 0, 0}; // [3]
 
-    public MumblePos(LinkApi api, ExceptionHandler exceptionHandler) {
-        this.api = api;
-        this.exceptionHandler = exceptionHandler;
+    public MumblePos(MumbleLoader loader) {
+        this.loader = loader;
     }
 
     public void propagate() {
@@ -79,9 +77,9 @@ public final class MumblePos {
         lm.fAvatarTop = this.fAvatarTop;
         lm.fCameraTop = this.fCameraTop;
 
-        var successMessage = this.api.updateData(lm);
+        var successMessage = this.loader.getApi().updateData(lm);
         if (successMessage == 0) {
-            this.exceptionHandler.handleStatus(
+            this.loader.getExceptionManager().handleStatus(
                     ExceptionHandler.UpdateStatus.NOT_INITIALIZED);
         }
     }
