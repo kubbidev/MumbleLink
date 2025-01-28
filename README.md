@@ -21,7 +21,7 @@ MumbleLink uses Gradle to handle dependencies & building.
 
 #### Requirements
 
-* Java 17 JDK or newer
+* Java 21 JDK or newer
 * Git
 
 #### Compiling from source

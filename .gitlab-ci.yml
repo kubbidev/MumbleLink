@@ -12,6 +12,6 @@ cache:
 
 build:
   stage: build
-  image: gradle:8.11.1-jdk17
+  image: gradle:8.11.1-jdk21
   script:
     - gradle --build-cache publish
