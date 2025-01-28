@@ -66,11 +66,10 @@ public final class MumbleLoader implements ClientTickEvents.EndTick, Module {
 
     @Override
     public void onEndTick(MinecraftClient client) {
-        if (this.isMumbleConnected()) {
-            if (client.player != null) {
-                this.mumblePos.update(client.player);
-                this.mumblePos.propagate();
-            }
+        if (!this.isMumbleConnected()) return;
+        if (client.player != null) {
+            this.mumblePos.update(client.player);
+            this.mumblePos.propagate();
         }
     }
 

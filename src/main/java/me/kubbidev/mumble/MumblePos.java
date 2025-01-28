@@ -42,48 +42,6 @@ public final class MumblePos {
         this.loader = loader;
     }
 
-    public void propagate() {
-        LinkApi.LinkedMem lm = new LinkApi.LinkedMem();
-
-        // [256]
-        lm.identity = LinkApiHelper.parseToCharBuffer(
-                LinkApi.MAX_IDENTITY_LENGTH, this.identity).array();
-
-        // [256]
-        lm.context = LinkApiHelper.parseToByteBuffer(
-                LinkApi.MAX_IDENTITY_LENGTH, this.context).array();
-
-        lm.context_len = this.context.length();
-
-        // [256]
-        String name = MumbleLoader.PLUGIN_NAME;
-        lm.name = LinkApiHelper.parseToCharBuffer(
-                LinkApi.MAX_NAME_LENGTH, name).array();
-
-        // [2048]
-        String lore = MumbleLoader.PLUGIN_LORE;
-        lm.description = LinkApiHelper.parseToCharBuffer(
-                LinkApi.MAX_LORE_LENGTH, lore).array();
-
-        lm.uiTick = ++this.uiTick;
-        lm.uiVersion = MumbleLoader.PLUGIN_UI_VERSION;
-
-        lm.fAvatarFront = this.fAvatarFront;
-        lm.fCameraFront = this.fCameraFront;
-
-        lm.fAvatarPosition = this.fAvatarPosition;
-        lm.fCameraPosition = this.fCameraPosition;
-
-        lm.fAvatarTop = this.fAvatarTop;
-        lm.fCameraTop = this.fCameraTop;
-
-        var successMessage = this.loader.getApi().updateData(lm);
-        if (successMessage == 0) {
-            this.loader.getExceptionManager().handleStatus(
-                    ExceptionHandler.UpdateStatus.NOT_INITIALIZED);
-        }
-    }
-
     public void update(@NotNull ClientPlayerEntity player) {
         this.identity = getIdentity(player);
         this.context = getContext();
@@ -164,5 +122,43 @@ public final class MumblePos {
                     string, LinkApi.MAX_CONTEXT_LENGTH, string.length());
         }
         return context.toString();
+    }
+
+    public void propagate() {
+        LinkApi.LinkedMem lm = new LinkApi.LinkedMem();
+
+        // [256]
+        lm.identity = LinkApiHelper.parseToCharBuffer(
+                LinkApi.MAX_IDENTITY_LENGTH, this.identity).array();
+
+        // [256]
+        lm.context = LinkApiHelper.parseToByteBuffer(
+                LinkApi.MAX_IDENTITY_LENGTH, this.context).array();
+        lm.context_len = this.context.length();
+
+        // [256]
+        String name = MumbleLoader.PLUGIN_NAME;
+        lm.name = LinkApiHelper.parseToCharBuffer(LinkApi.MAX_NAME_LENGTH, name).array();
+
+        // [2048]
+        String lore = MumbleLoader.PLUGIN_LORE;
+        lm.description = LinkApiHelper.parseToCharBuffer(LinkApi.MAX_LORE_LENGTH, lore).array();
+
+        lm.uiTick = ++this.uiTick;
+        lm.uiVersion = MumbleLoader.PLUGIN_UI_VERSION;
+
+        lm.fAvatarFront = this.fAvatarFront;
+        lm.fCameraFront = this.fCameraFront;
+
+        lm.fAvatarPosition = this.fAvatarPosition;
+        lm.fCameraPosition = this.fCameraPosition;
+
+        lm.fAvatarTop = this.fAvatarTop;
+        lm.fCameraTop = this.fCameraTop;
+
+        var successMessage = this.loader.getApi().updateData(lm);
+        if (successMessage == 0) {
+            this.loader.getExceptionManager().handleStatus(ExceptionHandler.UpdateStatus.NOT_INITIALIZED);
+        }
     }
 }
