@@ -79,7 +79,7 @@ publishing {
             pom {
                 name = "MumbleLink"
                 description = "A Minecraft mod that natively supports Mumble's positional audio feature."
-                url = "https://gitlab.com/kubbidev/mumblelink"
+                url = "https://github.com/kubbidev/MumbleLink"
 
                 licenses {
                     license {
@@ -97,8 +97,8 @@ publishing {
                 }
 
                 issueManagement {
-                    system = "Gitlab"
-                    url = "https://gitlab.com/kubbidev/mumblelink/-/issues"
+                    system = "GitHub"
+                    url = "https://github.com/kubbidev/MumbleLink/issues"
                 }
             }
         }

@@ -10,7 +10,7 @@
   ],
   "license": "CC BY-NC-SA 4.0",
   "contact": {
-    "issues": "https://gitlab.com/kubbidev/mumblelink/-/issues"
+    "issues": "https://github.com/kubbidev/MumbleLink/issues"
   },
   "environment": "client",
   "entrypoints": {
