@@ -16,7 +16,7 @@ import me.kubbidev.mumble.jna.LinkApiHelper;
 import me.kubbidev.mumble.jna.LinkApi;
 
 @Environment(EnvType.CLIENT)
-public final class MumblePos {
+public class MumblePos {
     private final MumbleLoader loader;
 
     private int uiTick = 0;

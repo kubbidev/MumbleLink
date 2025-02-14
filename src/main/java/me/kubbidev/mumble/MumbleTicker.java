@@ -7,7 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import me.kubbidev.mumble.api.Module;
 
 @Environment(EnvType.CLIENT)
-public final class MumbleTicker implements Module, ClientTickEvents.EndTick {
+public class MumbleTicker implements Module, ClientTickEvents.EndTick {
     private final MumbleLoader loader;
     private boolean enabled = false;
 

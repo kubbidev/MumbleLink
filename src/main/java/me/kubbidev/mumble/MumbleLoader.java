@@ -14,7 +14,7 @@ import me.kubbidev.mumble.jna.LinkApiHelper;
 import me.kubbidev.mumble.jna.LinkApi;
 
 @Environment(EnvType.CLIENT)
-public final class MumbleLoader implements ClientTickEvents.EndTick, Module {
+public class MumbleLoader implements ClientTickEvents.EndTick, Module {
 
     public static final String PLUGIN_NAME = "Minecraft";
     public static final String PLUGIN_LORE = "Minecraft (1.20.4)";

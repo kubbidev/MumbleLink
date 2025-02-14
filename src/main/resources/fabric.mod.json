@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "MumbleLink",
   "icon": "assets/mumblelink/icon.png",
-  "description": "A mod that natively supports Mumble's positional audio feature.",
+  "description": "A Minecraft mod that natively supports Mumble's positional audio feature.",
   "authors": [
     "kubbidev"
   ],

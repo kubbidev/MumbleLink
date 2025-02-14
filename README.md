@@ -3,7 +3,7 @@
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=for-the-badge)](https://github.com/RichardLitt/standard-readme)
 [![discord-banner](https://img.shields.io/discord/1258062506270654515?label=discord&style=for-the-badge&color=7289da)](https://discord.kubbidev.me)
 
-MumbleLink is a mod that natively supports **Mumble**'s positional audio feature.
+MumbleLink is a **Minecraft mod** that natively supports **Mumble**'s positional audio feature.
 
 It is:
 

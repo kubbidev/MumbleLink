@@ -78,7 +78,7 @@ publishing {
             from(components["java"])
             pom {
                 name = "MumbleLink"
-                description = "A mod that natively supports Mumble's positional audio feature."
+                description = "A Minecraft mod that natively supports Mumble's positional audio feature."
                 url = "https://gitlab.com/kubbidev/mumblelink"
 
                 licenses {
