@@ -25,6 +25,7 @@ public interface ExceptionHandler {
     @FunctionalInterface
     @Environment(EnvType.CLIENT)
     interface Identifiable {
+
         int getId();
     }
 

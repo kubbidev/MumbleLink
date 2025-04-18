@@ -8,7 +8,9 @@ import org.jetbrains.annotations.ApiStatus;
 
 @Environment(EnvType.CLIENT)
 public final class Env {
-    private Env() {}
+
+    private Env() {
+    }
 
     @ApiStatus.Internal
     public static String getName() {

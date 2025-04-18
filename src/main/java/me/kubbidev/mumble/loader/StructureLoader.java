@@ -19,30 +19,34 @@ import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class StructureLoader {
-    /** A mapping that associates platform-specific identifiers with corresponding library folder names. */
-    private static final Int2ObjectMap<String> PLATFORM_FOLDERS_MAPPING;
 
-    /** A mapping that associates platform-specific identifiers with corresponding library file names. */
+    /**
+     * A mapping that associates platform-specific identifiers with corresponding library folder names.
+     */
+    private static final Int2ObjectMap<String> PLATFORM_FOLDERS_MAPPING;
+    /**
+     * A mapping that associates platform-specific identifiers with corresponding library file names.
+     */
     private static final Int2ObjectMap<String> PLATFORM_FILES_MAPPING;
 
     static {
         PLATFORM_FOLDERS_MAPPING = Int2ObjectMaps.unmodifiable(new Int2ObjectOpenHashMap<>(Map.of(
-                Platform.LINUX, "linux", Platform.WINDOWS, "win32", Platform.MAC, "darwin"
+            Platform.LINUX, "linux", Platform.WINDOWS, "win32", Platform.MAC, "darwin"
         )));
 
         PLATFORM_FILES_MAPPING = Int2ObjectMaps.unmodifiable(new Int2ObjectOpenHashMap<>(Map.of(
-                Platform.LINUX, "lib%1s.so", Platform.WINDOWS, "%1s.dll", Platform.MAC, "lib%1s.dylib"
+            Platform.LINUX, "lib%1s.so", Platform.WINDOWS, "%1s.dll", Platform.MAC, "lib%1s.dylib"
         )));
     }
 
-    private StructureLoader() {}
+    private StructureLoader() {
+    }
 
     /**
      * Instantiates the {@link LinkApi} structure by loading the specified native library.
      * <p>
-     * This method extracts the required library to a temporary file, adds its
-     * path to the native library search path, and then attempts to load and bind
-     * it to the {@link LinkApi} interface.
+     * This method extracts the required library to a temporary file, adds its path to the native library search path,
+     * and then attempts to load and bind it to the {@link LinkApi} interface.
      *
      * @param name the name of the native library to be loaded
      * @return an instance of the LinkApi interface bound to the loaded library
@@ -100,13 +104,12 @@ public class StructureLoader {
      *
      * @param resourcePath the path of the resource to be extracted
      * @return the temporary file path where the resource has been extracted
-     * @throws LoadingException if the resource cannot be located, the temporary
-     *                          file cannot be created, or the resource cannot be
-     *                          written to the temporary file
+     * @throws LoadingException if the resource cannot be located, the temporary file cannot be created, or the resource
+     *                          cannot be written to the temporary file
      */
     private static Path extractFile(String resourcePath) throws LoadingException {
         var structure = MumbleLinkMod.MOD_CONTAINER.findPath(resourcePath)
-                .orElseThrow(() -> new LoadingException("Could not locate : " + resourcePath));
+            .orElseThrow(() -> new LoadingException("Could not locate : " + resourcePath));
 
         // create a temporary file
         // on posix systems by default this is only read/writable by the process owner

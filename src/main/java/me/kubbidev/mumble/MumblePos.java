@@ -17,26 +17,17 @@ import me.kubbidev.mumble.jna.LinkApi;
 
 @Environment(EnvType.CLIENT)
 public class MumblePos {
+
     private final MumbleLoader loader;
-
-    private int uiTick = 0;
-    private String identity; // [256]
-    private String context; // [256]
-
-    private float[] fAvatarFront
-            = {0, 0, 0}; // [3]
-    private float[] fCameraFront
-            = {0, 0, 0}; // [3]
-
-    private float[] fAvatarPosition
-            = {0, 0, 0}; // [3]
-    private float[] fCameraPosition
-            = {0, 0, 0}; // [3]
-
-    private float[] fAvatarTop
-            = {0, 0, 0}; // [3]
-    private float[] fCameraTop
-            = {0, 0, 0}; // [3]
+    private       int          uiTick          = 0;
+    private       String       identity; // [256]
+    private       String       context; // [256]
+    private       float[]      fAvatarFront    = {0, 0, 0}; // [3]
+    private       float[]      fCameraFront    = {0, 0, 0}; // [3]
+    private       float[]      fAvatarPosition = {0, 0, 0}; // [3]
+    private       float[]      fCameraPosition = {0, 0, 0}; // [3]
+    private       float[]      fAvatarTop      = {0, 0, 0}; // [3]
+    private       float[]      fCameraTop      = {0, 0, 0}; // [3]
 
     public MumblePos(MumbleLoader loader) {
         this.loader = loader;
@@ -51,36 +42,36 @@ public class MumblePos {
         Vec3d pos = player.getPos();
 
         this.fAvatarFront = new float[]{
-                (float) rotationVector.x,
-                (float) rotationVector.z,
-                (float) rotationVector.y
+            (float) rotationVector.x,
+            (float) rotationVector.z,
+            (float) rotationVector.y
         };
         this.fCameraFront = new float[]{
-                (float) rotationVector.x,
-                (float) rotationVector.z,
-                (float) rotationVector.y
+            (float) rotationVector.x,
+            (float) rotationVector.z,
+            (float) rotationVector.y
         };
 
         this.fAvatarPosition = new float[]{
-                (float) pos.x,
-                (float) pos.z,
-                (float) pos.y
+            (float) pos.x,
+            (float) pos.z,
+            (float) pos.y
         };
         this.fCameraPosition = new float[]{
-                (float) pos.x,
-                (float) pos.z,
-                (float) pos.y
+            (float) pos.x,
+            (float) pos.z,
+            (float) pos.y
         };
 
         this.fAvatarTop = new float[]{
-                (float) oppositeRotationVector.x,
-                (float) oppositeRotationVector.z,
-                (float) oppositeRotationVector.y
+            (float) oppositeRotationVector.x,
+            (float) oppositeRotationVector.z,
+            (float) oppositeRotationVector.y
         };
         this.fCameraTop = new float[]{
-                (float) oppositeRotationVector.x,
-                (float) oppositeRotationVector.z,
-                (float) oppositeRotationVector.y
+            (float) oppositeRotationVector.x,
+            (float) oppositeRotationVector.z,
+            (float) oppositeRotationVector.y
         };
     }
 
@@ -88,7 +79,9 @@ public class MumblePos {
         JsonObject identity = new JsonObject();
 
         var name = player.getDisplayName();
-        if (name != null) identity.addProperty(Key.Identity.NAME, name.getString());
+        if (name != null) {
+            identity.addProperty(Key.Identity.NAME, name.getString());
+        }
 
         JsonArray spawnCoordinates = new JsonArray();
         BlockPos spawnPos = player.clientWorld.getSpawnPos();
@@ -103,11 +96,10 @@ public class MumblePos {
         RegistryKey<World> dimensionKey = player.clientWorld.getRegistryKey();
         identity.addProperty(Key.Identity.DIMENSION, dimensionKey.toString());
 
-
         var string = identity.toString();
         if (string.length() > LinkApi.MAX_IDENTITY_LENGTH) {
             MumbleLinkMod.LOGGER.error("Identity is too long '{}' (max. {}): '{}'",
-                    string, LinkApi.MAX_IDENTITY_LENGTH, string.length());
+                string, LinkApi.MAX_IDENTITY_LENGTH, string.length());
         }
         return string;
     }
@@ -119,7 +111,7 @@ public class MumblePos {
         var string = context.toString();
         if (string.length() > LinkApi.MAX_CONTEXT_LENGTH) {
             MumbleLinkMod.LOGGER.error("Context is too long '{}' (max. {}): '{}'",
-                    string, LinkApi.MAX_CONTEXT_LENGTH, string.length());
+                string, LinkApi.MAX_CONTEXT_LENGTH, string.length());
         }
         return context.toString();
     }
@@ -129,11 +121,11 @@ public class MumblePos {
 
         // [256]
         lm.identity = LinkApiHelper.parseToCharBuffer(
-                LinkApi.MAX_IDENTITY_LENGTH, this.identity).array();
+            LinkApi.MAX_IDENTITY_LENGTH, this.identity).array();
 
         // [256]
         lm.context = LinkApiHelper.parseToByteBuffer(
-                LinkApi.MAX_IDENTITY_LENGTH, this.context).array();
+            LinkApi.MAX_IDENTITY_LENGTH, this.context).array();
         lm.context_len = this.context.length();
 
         // [256]

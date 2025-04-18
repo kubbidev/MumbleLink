@@ -6,6 +6,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 @Environment(EnvType.CLIENT)
 public final class MumbleLinkModProvider {
+
     private static MumbleLinkMod instance = null;
 
     public static MumbleLinkMod getInstance() {
@@ -33,14 +34,15 @@ public final class MumbleLinkModProvider {
 
 
     private static final class NotLoadedException extends IllegalStateException {
+
         private static final String MESSAGE = """
-                The MumbleLink API isn't loaded yet!
-                This could be because:
-                  a) the MumbleLink mod is not installed or it failed to enable
-                  b) the mod in the stacktrace does not declare a dependency on MumbleLink
-                  c) the mod in the stacktrace is retrieving the API before the mod 'initialize' phase
-                     (call the #get method in onInitialize, not the constructor!)
-                """;
+            The MumbleLink API isn't loaded yet!
+            This could be because:
+              a) the MumbleLink mod is not installed or it failed to enable
+              b) the mod in the stacktrace does not declare a dependency on MumbleLink
+              c) the mod in the stacktrace is retrieving the API before the mod 'initialize' phase
+                 (call the #get method in onInitialize, not the constructor!)
+            """;
 
         NotLoadedException() {
             super(MESSAGE);

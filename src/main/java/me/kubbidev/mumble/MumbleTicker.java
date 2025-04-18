@@ -8,8 +8,9 @@ import me.kubbidev.mumble.api.Module;
 
 @Environment(EnvType.CLIENT)
 public class MumbleTicker implements Module, ClientTickEvents.EndTick {
+
     private final MumbleLoader loader;
-    private boolean enabled = false;
+    private       boolean      enabled = false;
 
     public MumbleTicker(MumbleLoader loader) {
         this.loader = loader;
@@ -17,7 +18,9 @@ public class MumbleTicker implements Module, ClientTickEvents.EndTick {
 
     @Override
     public void onEndTick(MinecraftClient client) {
-        if (this.enabled) this.loader.onEndTick(client);
+        if (this.enabled) {
+            this.loader.onEndTick(client);
+        }
     }
 
     @Override

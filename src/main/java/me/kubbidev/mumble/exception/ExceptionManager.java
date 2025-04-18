@@ -10,6 +10,7 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ExceptionManager implements ExceptionHandler {
+
     private final MumbleLinkMod mod;
 
     public ExceptionManager(MumbleLinkMod mod) {
@@ -30,8 +31,8 @@ public class ExceptionManager implements ExceptionHandler {
                 ToastManager toastManager = client.getToastManager();
 
                 SystemToast.add(toastManager, SystemToast.Type.PERIODIC_NOTIFICATION,
-                        Text.literal(Env.getName()),
-                        Text.translatable("feature.mumblelink.status.toast.linked"));
+                    Text.literal(Env.getName()),
+                    Text.translatable("feature.mumblelink.status.toast.linked"));
             });
         }
     }

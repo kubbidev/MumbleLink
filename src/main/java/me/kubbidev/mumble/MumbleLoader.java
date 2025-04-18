@@ -16,29 +16,23 @@ import me.kubbidev.mumble.jna.LinkApi;
 @Environment(EnvType.CLIENT)
 public class MumbleLoader implements ClientTickEvents.EndTick, Module {
 
-    public static final String PLUGIN_NAME = "Minecraft";
-    public static final String PLUGIN_LORE = "Minecraft (1.20.4)";
-    public static final int PLUGIN_UI_VERSION = 2;
-
+    public static final String                      PLUGIN_NAME       = "Minecraft";
+    public static final String                      PLUGIN_LORE       = "Minecraft (1.21.4)";
+    public static final int                         PLUGIN_UI_VERSION = 2;
     // Initialize the mumble position defaults
-    private final MumblePos mumblePos = new MumblePos(this);
-    private LinkApi api;
-
-    private ExceptionHandler.InitStatus result
-            = ExceptionHandler.InitStatus.NOT_INITIALIZED;
-
+    private final       MumblePos                   mumblePos         = new MumblePos(this);
+    private             LinkApi                     api;
+    private             ExceptionHandler.InitStatus result            = ExceptionHandler.InitStatus.NOT_INITIALIZED;
     /**
      * Manages exception handling and status updates.
      */
-    private final ExceptionManager exceptionManager;
+    private final       ExceptionManager            exceptionManager;
 
     public MumbleLoader(MumbleLinkMod mod) {
         this.exceptionManager = new ExceptionManager(mod);
         try {
             // unpack the api from resources
-            this.api = StructureLoader.instantiateStructure(
-                    MumbleLinkConstants.LIBRARY_NAME);
-
+            this.api = StructureLoader.instantiateStructure(MumbleLinkConstants.LIBRARY_NAME);
         } catch (Throwable t) {
             this.exceptionManager.handleException(t);
         }
@@ -56,7 +50,7 @@ public class MumbleLoader implements ClientTickEvents.EndTick, Module {
     public void enable() {
         // Register the event to ensure the connection
         ClientPlayConnectionEvents.JOIN.register(
-                (handler, sender, client) -> this.ensureMumbleConnected());
+            (handler, sender, client) -> this.ensureMumbleConnected());
     }
 
     @Override
@@ -66,7 +60,9 @@ public class MumbleLoader implements ClientTickEvents.EndTick, Module {
 
     @Override
     public void onEndTick(MinecraftClient client) {
-        if (!this.isMumbleConnected()) return;
+        if (!this.isMumbleConnected()) {
+            return;
+        }
         if (client.player != null) {
             this.mumblePos.update(client.player);
             this.mumblePos.propagate();
@@ -84,9 +80,9 @@ public class MumbleLoader implements ClientTickEvents.EndTick, Module {
 
     private ExceptionHandler.@Nullable InitStatus initialize() {
         int i = this.api.initialize(
-                LinkApiHelper.parseToCharBuffer(LinkApi.MAX_NAME_LENGTH, MumbleLoader.PLUGIN_NAME),
-                LinkApiHelper.parseToCharBuffer(LinkApi.MAX_LORE_LENGTH, MumbleLoader.PLUGIN_LORE),
-                MumbleLoader.PLUGIN_UI_VERSION
+            LinkApiHelper.parseToCharBuffer(LinkApi.MAX_NAME_LENGTH, MumbleLoader.PLUGIN_NAME),
+            LinkApiHelper.parseToCharBuffer(LinkApi.MAX_LORE_LENGTH, MumbleLoader.PLUGIN_LORE),
+            MumbleLoader.PLUGIN_UI_VERSION
         );
         return ExceptionHandler.valueOf(ExceptionHandler.InitStatus.class, i);
     }

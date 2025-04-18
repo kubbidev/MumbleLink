@@ -10,11 +10,11 @@ import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public final class LinkApiHelper {
-    private LinkApiHelper() {}
 
-    public static @NotNull CharBuffer parseToCharBuffer(
-            int capacity, @NotNull String value
-    ) {
+    private LinkApiHelper() {
+    }
+
+    public static @NotNull CharBuffer parseToCharBuffer(int capacity, @NotNull String value) {
         CharBuffer buffer = CharBuffer.allocate(capacity);
         buffer.rewind();
         buffer.put(Objects.requireNonNull(value, "value").toCharArray());
@@ -22,9 +22,7 @@ public final class LinkApiHelper {
         return buffer;
     }
 
-    public static @NotNull ByteBuffer parseToByteBuffer(
-            int capacity, @NotNull String value
-    ) {
+    public static @NotNull ByteBuffer parseToByteBuffer(int capacity, @NotNull String value) {
         ByteBuffer buffer = ByteBuffer.allocate(capacity);
         buffer.rewind();
         buffer.put(Objects.requireNonNull(value, "value").getBytes());

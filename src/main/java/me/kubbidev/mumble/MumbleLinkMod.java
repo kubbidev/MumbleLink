@@ -16,13 +16,14 @@ import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public final class MumbleLinkMod implements ClientModInitializer {
+
     public static final String MOD_ID = "mumblelink";
 
     /**
      * The mod container singleton instance.
      */
     public static final ModContainer MOD_CONTAINER = FabricLoader.getInstance().getModContainer(MOD_ID)
-            .orElseThrow(() -> new RuntimeException("Could not get the MumbleLink mod container."));
+        .orElseThrow(() -> new RuntimeException("Could not get the MumbleLink mod container."));
 
     /**
      * The universal mod logger
@@ -32,16 +33,14 @@ public final class MumbleLinkMod implements ClientModInitializer {
     /**
      * The time when the mod was enabled
      */
-    private Instant startTime;
-
+    private Instant         startTime;
     /**
      * The Minecraft client instance
      */
     private MinecraftClient client;
-
     // init during enable
-    private MumbleTicker mumbleTicker;
-    private MumbleLoader mumbleLoader;
+    private MumbleTicker    mumbleTicker;
+    private MumbleLoader    mumbleLoader;
 
     // provide adapters
 
