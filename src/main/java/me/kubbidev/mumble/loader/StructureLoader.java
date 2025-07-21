@@ -45,8 +45,8 @@ public class StructureLoader {
     /**
      * Instantiates the {@link LinkApi} structure by loading the specified native library.
      * <p>
-     * This method extracts the required library to a temporary file, adds its path to the native library search path,
-     * and then attempts to load and bind it to the {@link LinkApi} interface.
+     * This method extracts the required library to a temporary file, adds its path to the native library search path, and then attempts to
+     * load and bind it to the {@link LinkApi} interface.
      *
      * @param name the name of the native library to be loaded
      * @return an instance of the LinkApi interface bound to the loaded library
@@ -104,8 +104,8 @@ public class StructureLoader {
      *
      * @param resourcePath the path of the resource to be extracted
      * @return the temporary file path where the resource has been extracted
-     * @throws LoadingException if the resource cannot be located, the temporary file cannot be created, or the resource
-     *                          cannot be written to the temporary file
+     * @throws LoadingException if the resource cannot be located, the temporary file cannot be created, or the resource cannot be written
+     *                          to the temporary file
      */
     private static Path extractFile(String resourcePath) throws LoadingException {
         var structure = MumbleLinkMod.MOD_CONTAINER.findPath(resourcePath)

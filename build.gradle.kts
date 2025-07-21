@@ -1,25 +1,22 @@
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import java.io.ByteArrayOutputStream
 
+apply("gradle/ver.gradle.kts")
 plugins {
     id("java")
-    id("java-library")
-    alias(libs.plugins.loom)
-    alias(libs.plugins.shadow)
     id("maven-publish")
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.loom)
 }
 
 group = "me.kubbidev"
-version = "1.0-SNAPSHOT"
 
 base {
     archivesName.set("mumblelink")
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     withSourcesJar()
 }
 
@@ -28,52 +25,98 @@ repositories {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.21.4")
-    mappings("net.fabricmc:yarn:1.21.4+build.8:v2")
-    modImplementation("net.fabricmc:fabric-loader:0.16.10")
+    minecraft("com.mojang:minecraft:1.21.8")
+    mappings("net.fabricmc:yarn:1.21.8+build.1:v2")
+    modImplementation("net.fabricmc:fabric-loader:0.16.14")
 
     val apiModules = listOf(
-        "fabric-api"
+        "fabric-api-base",
+        "fabric-lifecycle-events-v1",
+        "fabric-networking-api-v1"
     )
 
     apiModules.forEach {
-        modImplementation(fabricApi.module(it, "0.115.0+1.21.4"))
+        modImplementation(fabricApi.module(it, "0.129.0+1.21.8"))
     }
 
-    // test
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.4")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.4")
+    // Unit tests
     testImplementation("org.testcontainers:junit-jupiter:1.20.4")
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.4")
 }
 
-fun determinePatchVersion(): Int {
-    // get the name of the last tag
-    val tagInfo = ByteArrayOutputStream()
-    exec {
-        commandLine("git", "describe", "--tags")
-        standardOutput = tagInfo
-    }
-    val tagString = String(tagInfo.toByteArray())
-    if (tagString.contains("-")) {
-        return tagString.split("-")[1].toInt()
-    }
-    return 0
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
 }
 
-val majorVersion = "1"
-val minorVersion = "0"
-val patchVersion = determinePatchVersion()
-val releaseVersion = "$majorVersion.$minorVersion"
-val projectVersion = "$releaseVersion.$patchVersion"
+tasks.processResources {
+    inputs.property("version", "$version")
+    filesMatching("**/fabric.mod.json") {
+        expand("version" to "$version")
+    }
+}
+
+tasks.shadowJar {
+    archiveFileName = "mumblelink-$version-dev.jar"
+    mergeServiceFiles()
+    dependencies {
+        exclude("net.fabricmc:.*")
+        include(dependency("me.kubbidev:.*"))
+
+        // We don't want to include the mappings in the jar do we?
+        exclude("/mappings/*")
+    }
+}
+
+val remappedShadowJar by tasks.registering(RemapJarTask::class) {
+    dependsOn(tasks.shadowJar)
+
+    inputFile = tasks.shadowJar.flatMap {
+        it.archiveFile
+    }
+    addNestedDependencies = true
+    archiveFileName = "MumbleLink-Fabric-$version.jar"
+}
+
+tasks.assemble {
+    dependsOn(remappedShadowJar)
+}
+
+tasks.publish {
+    dependsOn(tasks.shadowJar)
+}
+
+tasks.matching { it.name.startsWith("publish") }.configureEach {
+    doFirst {
+        if (version.toString().contains('+')) {
+            throw GradleException("Refusing to publish non-release version: $version (tag a release first)")
+        }
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+tasks.withType<Test>().configureEach {
+    testLogging {
+        events = setOf(TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.SKIPPED)
+    }
+}
+
+artifacts {
+    archives(tasks.shadowJar)
+    archives(remappedShadowJar)
+}
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = "mumblelink"
-            version = releaseVersion
 
             from(components["java"])
             pom {
@@ -107,69 +150,9 @@ publishing {
         maven(url = "https://nexus.kubbidev.me/repository/maven-releases/") {
             name = "kubbidev-releases"
             credentials(PasswordCredentials::class) {
-                username = System.getenv("GRADLE_KUBBIDEV_RELEASES_USER")
-                    ?: property("kubbidev-releases-user") as String?
-
-                password = System.getenv("GRADLE_KUBBIDEV_RELEASES_PASS")
-                    ?: property("kubbidev-releases-pass") as String?
+                username = System.getenv("GRADLE_KUBBIDEV_RELEASES_USER") ?: property("kubbidev-releases-user") as String?
+                password = System.getenv("GRADLE_KUBBIDEV_RELEASES_PASS") ?: property("kubbidev-releases-pass") as String?
             }
         }
     }
-}
-
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-}
-
-tasks.processResources {
-    inputs.property("version", projectVersion)
-    filesMatching("**/fabric.mod.json") {
-        expand("version" to projectVersion)
-    }
-}
-
-tasks.shadowJar {
-    archiveFileName = "mumblelink-${projectVersion}-dev.jar"
-
-    mergeServiceFiles()
-    dependencies {
-        exclude(dependency("net.fabricmc:.*"))
-        include(dependency("me.kubbidev:.*"))
-
-        // we don't want to include the mappings in the jar do we?
-        exclude("/mappings/*")
-    }
-}
-
-val remappedShadowJar by tasks.registering(RemapJarTask::class) {
-    dependsOn(tasks.shadowJar)
-
-    inputFile = tasks.shadowJar.flatMap {
-        it.archiveFile
-    }
-    addNestedDependencies = true
-    archiveFileName = "MumbleLink-Fabric-${projectVersion}.jar"
-}
-
-tasks.assemble {
-    dependsOn(remappedShadowJar)
-}
-
-tasks.publish {
-    dependsOn(tasks.shadowJar)
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-tasks.withType<Test>().configureEach {
-    testLogging {
-        events = setOf(TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.SKIPPED)
-    }
-}
-
-artifacts {
-    archives(remappedShadowJar)
-    archives(tasks.shadowJar)
 }

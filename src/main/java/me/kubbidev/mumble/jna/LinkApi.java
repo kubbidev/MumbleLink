@@ -12,8 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The LinkApi interface is designed to interface with Mumble's positional audio system, allowing external applications
- * to interact with the Mumble client.
+ * The LinkApi interface is designed to interface with Mumble's positional audio system, allowing external applications to interact with the
+ * Mumble client.
  * <p>
  * It enables the configuration and updating of context, identity, positional data, and more for Mumble's integration.
  */
@@ -42,14 +42,13 @@ public interface LinkApi extends Library {
     int MAX_LORE_LENGTH     = 2048;
 
     /**
-     * Initializes the instance with the provided name, description, and UI version. This setup is required before
-     * interacting with the system.
+     * Initializes the instance with the provided name, description, and UI version. This setup is required before interacting with the
+     * system.
      *
      * @param name        the display name of the application
      * @param description a descriptive text explaining the application
      * @param uiVersion   the version of the user interface
-     * @return an integer representing the initialization status; typically used to determine if the initialization was
-     * successful or not
+     * @return an integer representing the initialization status; typically used to determine if the initialization was successful or not
      * @implNote <code>int initialize(wchar_t[256], wchar_t[2048], UINT32)</code>
      */
     int initialize(CharBuffer name, CharBuffer description, int uiVersion);
@@ -72,8 +71,8 @@ public interface LinkApi extends Library {
      * <p>
      * The context string is used to determine which users on a Mumble server should hear each other positionally.
      * <p>
-     * If context between two mumble user does not match the positional audio data is stripped server-side and voice
-     * will be received as non-positional.
+     * If context between two mumble user does not match the positional audio data is stripped server-side and voice will be received as
+     * non-positional.
      *
      * @param context     a {@code ByteBuffer} containing the context data to be updated.
      * @param context_len the length of the context (number of active array elements).
@@ -98,8 +97,8 @@ public interface LinkApi extends Library {
     /**
      * Updates the name of the application or user.
      * <p>
-     * this name is shown in the mumble interface to indicate which plugin's positional audio is being used (i.e. used
-     * for the "XXX linked." message in the mumble log)
+     * this name is shown in the mumble interface to indicate which plugin's positional audio is being used (i.e. used for the "XXX linked."
+     * message in the mumble log)
      *
      * @param name a {@code CharBuffer} containing the new name to be updated.
      * @return a byte indicating the success or failure of the operation. Typically, a non-zero value indicates failure.
@@ -119,8 +118,7 @@ public interface LinkApi extends Library {
     /**
      * Updates the spatial vectors for both avatar and camera.
      * <p>
-     * This method updates the position, front, and top unit vectors for the avatar and camera in the 3D space used by
-     * the LinkApi system.
+     * This method updates the position, front, and top unit vectors for the avatar and camera in the 3D space used by the LinkApi system.
      *
      * <p>These vectors are essential for accurately calculating spatial audio.</p>
      *
@@ -164,8 +162,8 @@ public interface LinkApi extends Library {
     /**
      * Updates the system data with the given {@link LinkedMem} instance.
      * <p>
-     * The data includes various fields such as spatial vectors, identity, context, name, and description information,
-     * as defined in the {@link LinkedMem} structure.
+     * The data includes various fields such as spatial vectors, identity, context, name, and description information, as defined in the
+     * {@link LinkedMem} structure.
      *
      * @param source a {@link LinkedMem} object containing the new data to be updated.
      * @return a byte indicating the success or failure of the operation.
@@ -254,16 +252,12 @@ public interface LinkApi extends Library {
                 "description");
         }
 
-        public static class ByReference extends LinkedMem
-            implements Structure.ByReference {
+        public static class ByReference extends LinkedMem implements Structure.ByReference {
 
         }
 
-        public static class ByValue extends LinkedMem
-            implements Structure.ByValue {
+        public static class ByValue extends LinkedMem implements Structure.ByValue {
 
         }
-
     }
-
 }

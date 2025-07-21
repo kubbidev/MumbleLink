@@ -17,7 +17,7 @@ import me.kubbidev.mumble.jna.LinkApi;
 public class MumbleLoader implements ClientTickEvents.EndTick, Module {
 
     public static final String                      PLUGIN_NAME       = "Minecraft";
-    public static final String                      PLUGIN_LORE       = "Minecraft (1.21.4)";
+    public static final String                      PLUGIN_LORE       = "Minecraft (1.21.8)";
     public static final int                         PLUGIN_UI_VERSION = 2;
     // Initialize the mumble position defaults
     private final       MumblePos                   mumblePos         = new MumblePos(this);
