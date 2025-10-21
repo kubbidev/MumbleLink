@@ -18,19 +18,19 @@ public class MumbleTicker implements Module, ClientTickEvents.EndTick {
 
     @Override
     public void onEndTick(MinecraftClient client) {
-        if (this.enabled) {
-            this.loader.onEndTick(client);
+        if (enabled) {
+            loader.onEndTick(client);
         }
     }
 
     @Override
     public void enable() {
-        this.enabled = true;
+        enabled = true;
         ClientTickEvents.END_CLIENT_TICK.register(this);
     }
 
     @Override
     public void disable() {
-        this.enabled = false;
+        enabled = false;
     }
 }

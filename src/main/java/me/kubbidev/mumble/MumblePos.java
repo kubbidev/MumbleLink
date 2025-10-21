@@ -10,10 +10,10 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
 import me.kubbidev.mumble.exception.ExceptionHandler;
 import me.kubbidev.mumble.jna.LinkApiHelper;
 import me.kubbidev.mumble.jna.LinkApi;
+import net.minecraft.world.WorldProperties.SpawnPoint;
 
 @Environment(EnvType.CLIENT)
 public class MumblePos {
@@ -33,58 +33,60 @@ public class MumblePos {
         this.loader = loader;
     }
 
-    public void update(@NotNull ClientPlayerEntity player) {
-        this.identity = getIdentity(player);
-        this.context = getContext();
+    public void update(ClientPlayerEntity clientPlayer) {
+        identity = getIdentity(clientPlayer);
+        context = getContext();
 
-        Vec3d rotationVector = player.getRotationVector();
-        Vec3d oppositeRotationVector = player.getOppositeRotationVector(1.0F);
-        Vec3d pos = player.getPos();
+        Vec3d rotationVector = clientPlayer.getRotationVector();
+        Vec3d oppositeRotationVector = clientPlayer.getOppositeRotationVector(1.0F);
+        Vec3d pos = clientPlayer.getEntityPos();
 
-        this.fAvatarFront = new float[]{
+        fAvatarFront = new float[]{
             (float) rotationVector.x,
             (float) rotationVector.z,
             (float) rotationVector.y
         };
-        this.fCameraFront = new float[]{
+        fCameraFront = new float[]{
             (float) rotationVector.x,
             (float) rotationVector.z,
             (float) rotationVector.y
         };
 
-        this.fAvatarPosition = new float[]{
+        fAvatarPosition = new float[]{
             (float) pos.x,
             (float) pos.z,
             (float) pos.y
         };
-        this.fCameraPosition = new float[]{
+        fCameraPosition = new float[]{
             (float) pos.x,
             (float) pos.z,
             (float) pos.y
         };
 
-        this.fAvatarTop = new float[]{
+        fAvatarTop = new float[]{
             (float) oppositeRotationVector.x,
             (float) oppositeRotationVector.z,
             (float) oppositeRotationVector.y
         };
-        this.fCameraTop = new float[]{
+        fCameraTop = new float[]{
             (float) oppositeRotationVector.x,
             (float) oppositeRotationVector.z,
             (float) oppositeRotationVector.y
         };
     }
 
-    private String getIdentity(ClientPlayerEntity player) {
+    private String getIdentity(ClientPlayerEntity clientPlayer) {
         JsonObject identity = new JsonObject();
 
-        var name = player.getDisplayName();
+        var name = clientPlayer.getDisplayName();
         if (name != null) {
             identity.addProperty(Key.Identity.NAME, name.getString());
         }
 
         JsonArray spawnCoordinates = new JsonArray();
-        BlockPos spawnPos = player.clientWorld.getSpawnPos();
+        SpawnPoint spawnPoint = clientPlayer.getEntityWorld().getSpawnPoint();
+
+        BlockPos spawnPos = spawnPoint.getPos();
         spawnCoordinates.add(spawnPos.getX());
         spawnCoordinates.add(spawnPos.getY());
         spawnCoordinates.add(spawnPos.getZ());
@@ -93,13 +95,14 @@ public class MumblePos {
         identity.add(Key.Identity.WORLD_SPAWN, spawnCoordinates);
 
         // append the dimension
-        RegistryKey<World> dimensionKey = player.clientWorld.getRegistryKey();
+        RegistryKey<World> dimensionKey = clientPlayer.getEntityWorld().getRegistryKey();
         identity.addProperty(Key.Identity.DIMENSION, dimensionKey.toString());
 
         var string = identity.toString();
         if (string.length() > LinkApi.MAX_IDENTITY_LENGTH) {
             MumbleLinkMod.LOGGER.error("Identity is too long '{}' (max. {}): '{}'",
-                string, LinkApi.MAX_IDENTITY_LENGTH, string.length());
+                string,
+                LinkApi.MAX_IDENTITY_LENGTH, string.length());
         }
         return string;
     }
@@ -111,7 +114,8 @@ public class MumblePos {
         var string = context.toString();
         if (string.length() > LinkApi.MAX_CONTEXT_LENGTH) {
             MumbleLinkMod.LOGGER.error("Context is too long '{}' (max. {}): '{}'",
-                string, LinkApi.MAX_CONTEXT_LENGTH, string.length());
+                string,
+                LinkApi.MAX_CONTEXT_LENGTH, string.length());
         }
         return context.toString();
     }
@@ -121,12 +125,11 @@ public class MumblePos {
 
         // [256]
         lm.identity = LinkApiHelper.parseToCharBuffer(
-            LinkApi.MAX_IDENTITY_LENGTH, this.identity).array();
+            LinkApi.MAX_IDENTITY_LENGTH, identity).array();
 
         // [256]
-        lm.context = LinkApiHelper.parseToByteBuffer(
-            LinkApi.MAX_IDENTITY_LENGTH, this.context).array();
-        lm.context_len = this.context.length();
+        lm.context = LinkApiHelper.parseToByteBuffer(LinkApi.MAX_IDENTITY_LENGTH, context).array();
+        lm.context_len = context.length();
 
         // [256]
         String name = MumbleLoader.PLUGIN_NAME;
@@ -136,21 +139,21 @@ public class MumblePos {
         String lore = MumbleLoader.PLUGIN_LORE;
         lm.description = LinkApiHelper.parseToCharBuffer(LinkApi.MAX_LORE_LENGTH, lore).array();
 
-        lm.uiTick = ++this.uiTick;
+        lm.uiTick = ++uiTick;
         lm.uiVersion = MumbleLoader.PLUGIN_UI_VERSION;
 
-        lm.fAvatarFront = this.fAvatarFront;
-        lm.fCameraFront = this.fCameraFront;
+        lm.fAvatarFront = fAvatarFront;
+        lm.fCameraFront = fCameraFront;
 
-        lm.fAvatarPosition = this.fAvatarPosition;
-        lm.fCameraPosition = this.fCameraPosition;
+        lm.fAvatarPosition = fAvatarPosition;
+        lm.fCameraPosition = fCameraPosition;
 
-        lm.fAvatarTop = this.fAvatarTop;
-        lm.fCameraTop = this.fCameraTop;
+        lm.fAvatarTop = fAvatarTop;
+        lm.fCameraTop = fCameraTop;
 
-        var successMessage = this.loader.getApi().updateData(lm);
+        var successMessage = loader.getApi().updateData(lm);
         if (successMessage == 0) {
-            this.loader.getExceptionManager().handleStatus(ExceptionHandler.UpdateStatus.NOT_INITIALIZED);
+            loader.getExceptionManager().handleStatus(ExceptionHandler.UpdateStatus.NOT_INITIALIZED);
         }
     }
 }

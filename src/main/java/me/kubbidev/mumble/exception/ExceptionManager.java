@@ -27,7 +27,7 @@ public class ExceptionManager implements ExceptionHandler {
         MumbleLinkMod.LOGGER.info("Init status: {} ({})", status.getId(), status);
 
         if (status == InitStatus.LINKED) {
-            this.mod.getClient().ifPresent(client -> {
+            mod.getClient().ifPresent(client -> {
                 ToastManager toastManager = client.getToastManager();
 
                 SystemToast.add(toastManager, SystemToast.Type.PERIODIC_NOTIFICATION,

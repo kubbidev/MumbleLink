@@ -45,7 +45,7 @@ public final class MumbleLinkMod implements ClientModInitializer {
     // provide adapters
 
     public Instant getStartTime() {
-        return this.startTime;
+        return startTime;
     }
 
     // lifecycle
@@ -59,21 +59,21 @@ public final class MumbleLinkMod implements ClientModInitializer {
 
     private void onClientStarted(MinecraftClient client) {
         this.client = client;
-        this.startTime = Instant.now();
+        startTime = Instant.now();
 
         // register the mumble link provider
         MumbleLinkModProvider.register(this);
 
         // enable the mumble loader events
-        this.mumbleLoader = new MumbleLoader(this);
-        this.mumbleLoader.enable();
+        mumbleLoader = new MumbleLoader(this);
+        mumbleLoader.enable();
 
         // enable the mumble position ticker
-        this.mumbleTicker = new MumbleTicker(this.mumbleLoader);
-        this.mumbleTicker.enable();
+        mumbleTicker = new MumbleTicker(mumbleLoader);
+        mumbleTicker.enable();
 
         // successfully print the time taken when loading the mod!
-        Duration timeTaken = Duration.between(this.getStartTime(), Instant.now());
+        Duration timeTaken = Duration.between(getStartTime(), Instant.now());
         LOGGER.info("Successfully enabled. (took {}ms)", timeTaken.toMillis());
     }
 
@@ -81,10 +81,10 @@ public final class MumbleLinkMod implements ClientModInitializer {
         LOGGER.info("Starting shutdown process...");
 
         // disable ticking
-        this.mumbleTicker.disable();
+        mumbleTicker.disable();
 
         // disable the mumble loader
-        this.mumbleLoader.disable();
+        mumbleLoader.disable();
 
         // unregister provider
         MumbleLinkModProvider.unregister();
@@ -96,6 +96,6 @@ public final class MumbleLinkMod implements ClientModInitializer {
     // MinecraftClient singleton getter
 
     public Optional<MinecraftClient> getClient() {
-        return Optional.ofNullable(this.client);
+        return Optional.ofNullable(client);
     }
 }

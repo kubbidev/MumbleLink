@@ -53,7 +53,7 @@ public interface ExceptionHandler {
 
         @Override
         public int getId() {
-            return this.id;
+            return id;
         }
     }
 
@@ -71,7 +71,7 @@ public interface ExceptionHandler {
 
         @Override
         public int getId() {
-            return this.id;
+            return id;
         }
     }
 }
