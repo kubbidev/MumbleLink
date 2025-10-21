@@ -130,7 +130,7 @@ publishing {
                 developers {
                     developer {
                         id = "kubbidev"
-                        name = "kubbi"
+                        name = "Kubbi"
                         url = "https://kubbidev.me"
                     }
                 }
