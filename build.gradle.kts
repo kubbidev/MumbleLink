@@ -40,13 +40,14 @@ dependencies {
     }
 
     // Unit tests
-    testImplementation("org.testcontainers:junit-jupiter:1.20.4")
-    testImplementation("org.mockito:mockito-core:5.14.2")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.3")
+    testImplementation("org.mockito:mockito-core:5.20.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.20.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.4")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.4")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:6.0.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:6.0.0")
 }
 
 tasks.withType<JavaCompile> {
@@ -106,11 +107,6 @@ tasks.withType<Test>().configureEach {
     testLogging {
         events = setOf(TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.SKIPPED)
     }
-}
-
-artifacts {
-    archives(tasks.shadowJar)
-    archives(remappedShadowJar)
 }
 
 publishing {
