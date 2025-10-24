@@ -4,9 +4,9 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 apply("gradle/ver.gradle.kts")
 plugins {
     id("java")
-    id("maven-publish")
-    alias(libs.plugins.shadow)
     alias(libs.plugins.loom)
+    alias(libs.plugins.shadow)
+    id("maven-publish")
 }
 
 group = "me.kubbidev"
@@ -40,10 +40,6 @@ dependencies {
     }
 
     // Unit tests
-    testImplementation("org.testcontainers:junit-jupiter:1.21.3")
-    testImplementation("org.mockito:mockito-core:5.20.0")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.20.0")
-
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:6.0.0")
