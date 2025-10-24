@@ -143,7 +143,7 @@ publishing {
         }
     }
     repositories {
-        maven(url = "https://nexus.kubbidev.me/repository/maven-releases/") {
+        maven("https://nexus.kubbidev.me/repository/maven-releases/") {
             name = "kubbidev-releases"
             credentials(PasswordCredentials::class) {
                 username = System.getenv("GRADLE_KUBBIDEV_RELEASES_USER") ?: property("kubbidev-releases-user") as String?
