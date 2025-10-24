@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -78,7 +79,7 @@ public class MumblePos {
     private String getIdentity(ClientPlayerEntity clientPlayer) {
         JsonObject identity = new JsonObject();
 
-        var name = clientPlayer.getDisplayName();
+        Text name = clientPlayer.getDisplayName();
         if (name != null) {
             identity.addProperty(Key.Identity.NAME, name.getString());
         }
@@ -91,14 +92,14 @@ public class MumblePos {
         spawnCoordinates.add(spawnPos.getY());
         spawnCoordinates.add(spawnPos.getZ());
 
-        // append coordinates
+        // Append coordinates
         identity.add(Key.Identity.WORLD_SPAWN, spawnCoordinates);
 
-        // append the dimension
+        // Append the dimension
         RegistryKey<World> dimensionKey = clientPlayer.getEntityWorld().getRegistryKey();
         identity.addProperty(Key.Identity.DIMENSION, dimensionKey.toString());
 
-        var string = identity.toString();
+        String string = identity.toString();
         if (string.length() > LinkApi.MAX_IDENTITY_LENGTH) {
             MumbleLinkMod.LOGGER.error("Identity is too long '{}' (max. {}): '{}'",
                 string,
@@ -111,7 +112,7 @@ public class MumblePos {
         JsonObject context = new JsonObject();
         context.addProperty(Key.Context.DOMAIN, MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN);
 
-        var string = context.toString();
+        String string = context.toString();
         if (string.length() > LinkApi.MAX_CONTEXT_LENGTH) {
             MumbleLinkMod.LOGGER.error("Context is too long '{}' (max. {}): '{}'",
                 string,
@@ -151,7 +152,8 @@ public class MumblePos {
         lm.fAvatarTop = fAvatarTop;
         lm.fCameraTop = fCameraTop;
 
-        var successMessage = loader.getApi().updateData(lm);
+        LinkApi api = loader.getApi();
+        byte successMessage = api.updateData(lm);
         if (successMessage == 0) {
             loader.getExceptionManager().handleStatus(ExceptionHandler.UpdateStatus.NOT_INITIALIZED);
         }

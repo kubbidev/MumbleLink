@@ -3,8 +3,6 @@ package me.kubbidev.mumble.exception;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-import java.util.EnumSet;
-
 /**
  * Used when you want to implement your own exception handling, instead of just printing the stack trace.
  */
@@ -22,56 +20,43 @@ public interface ExceptionHandler {
 
     void handleStatus(UpdateStatus status);
 
-    @FunctionalInterface
     @Environment(EnvType.CLIENT)
-    interface Identifiable {
+    enum InitStatus {
 
-        int getId();
-    }
+        NOT_INITIALIZED,
+        LINKED,
 
-    static <E extends Enum<E> & Identifiable> E valueOf(Class<E> type, int id) {
-        return EnumSet.allOf(type).stream().filter(e -> e.getId() == id).findFirst().orElse(null);
-    }
+        NO_WIN_HANDLE,
+        NO_WIN_STRUCTURE,
 
-    @Environment(EnvType.CLIENT)
-    enum InitStatus implements Identifiable {
+        NO_UNIX_HANDLE,
+        NO_UNIX_STRUCTURE;
 
-        NOT_INITIALIZED(-1),
-        LINKED(0),
-
-        NO_WIN_HANDLE(1),
-        NO_WIN_STRUCTURE(2),
-
-        NO_UNIX_HANDLE(3),
-        NO_UNIX_STRUCTURE(4);
-
-        private final int id;
-
-        InitStatus(int id) {
-            this.id = id;
+        public static InitStatus fromId(int id) {
+            return switch (id) {
+                case -1 -> NOT_INITIALIZED;
+                case 0 -> LINKED;
+                case 1 -> NO_WIN_HANDLE;
+                case 2 -> NO_WIN_STRUCTURE;
+                case 3 -> NO_UNIX_HANDLE;
+                case 4 -> NO_UNIX_STRUCTURE;
+                default -> throw new IllegalArgumentException("Unknown init status: " + id);
+            };
         }
 
-        @Override
-        public int getId() {
-            return id;
+        public int id() {
+            return ordinal() - 1;
         }
     }
 
     @Environment(EnvType.CLIENT)
-    enum UpdateStatus implements Identifiable {
+    enum UpdateStatus {
 
-        LINKED(0),
-        NOT_INITIALIZED(1);
+        LINKED,
+        NOT_INITIALIZED;
 
-        private final int id;
-
-        UpdateStatus(int id) {
-            this.id = id;
-        }
-
-        @Override
-        public int getId() {
-            return id;
+        public int id() {
+            return ordinal();
         }
     }
 }

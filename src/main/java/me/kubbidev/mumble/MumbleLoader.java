@@ -1,12 +1,10 @@
 package me.kubbidev.mumble;
 
-import me.kubbidev.mumble.api.Module;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
-import org.jetbrains.annotations.Nullable;
 import me.kubbidev.mumble.exception.ExceptionHandler;
 import me.kubbidev.mumble.exception.ExceptionManager;
 import me.kubbidev.mumble.loader.StructureLoader;
@@ -14,7 +12,7 @@ import me.kubbidev.mumble.jna.LinkApiHelper;
 import me.kubbidev.mumble.jna.LinkApi;
 
 @Environment(EnvType.CLIENT)
-public class MumbleLoader implements ClientTickEvents.EndTick, Module {
+public class MumbleLoader implements ClientTickEvents.EndTick {
 
     public static final String                      PLUGIN_NAME       = "Minecraft";
     public static final String                      PLUGIN_LORE       = "Minecraft (1.21.10)";
@@ -28,8 +26,8 @@ public class MumbleLoader implements ClientTickEvents.EndTick, Module {
      */
     private final       ExceptionManager            exceptionManager;
 
-    public MumbleLoader(MumbleLinkMod mod) {
-        exceptionManager = new ExceptionManager(mod);
+    public MumbleLoader(MinecraftClient client) {
+        exceptionManager = new ExceptionManager(client);
         try {
             // unpack the api from resources
             api = StructureLoader.instantiateStructure(MumbleLinkConstants.LIBRARY_NAME);
@@ -46,15 +44,9 @@ public class MumbleLoader implements ClientTickEvents.EndTick, Module {
         return exceptionManager;
     }
 
-    @Override
-    public void enable() {
+    public void setup() {
         // Register the event to ensure the connection
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ensureMumbleConnected());
-    }
-
-    @Override
-    public void disable() {
-        // ignore
     }
 
     @Override
@@ -73,16 +65,13 @@ public class MumbleLoader implements ClientTickEvents.EndTick, Module {
     }
 
     private void ensureMumbleConnected() {
-        result = initialize();
-        exceptionManager.handleStatus(result);
-    }
-
-    private ExceptionHandler.@Nullable InitStatus initialize() {
-        int code = api.initialize(
-            LinkApiHelper.parseToCharBuffer(LinkApi.MAX_NAME_LENGTH, MumbleLoader.PLUGIN_NAME),
-            LinkApiHelper.parseToCharBuffer(LinkApi.MAX_LORE_LENGTH, MumbleLoader.PLUGIN_LORE),
-            MumbleLoader.PLUGIN_UI_VERSION
+        int id = api.initialize(
+            LinkApiHelper.parseToCharBuffer(LinkApi.MAX_NAME_LENGTH, PLUGIN_NAME),
+            LinkApiHelper.parseToCharBuffer(LinkApi.MAX_LORE_LENGTH, PLUGIN_LORE),
+            PLUGIN_UI_VERSION
         );
-        return ExceptionHandler.valueOf(ExceptionHandler.InitStatus.class, code);
+
+        result = ExceptionHandler.InitStatus.fromId(id);
+        exceptionManager.handleStatus(result);
     }
 }

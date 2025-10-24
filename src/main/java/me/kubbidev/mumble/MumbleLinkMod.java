@@ -40,7 +40,6 @@ public final class MumbleLinkMod implements ClientModInitializer {
     private MinecraftClient client;
     // init during enable
     private MumbleTicker    mumbleTicker;
-    private MumbleLoader    mumbleLoader;
 
     // provide adapters
 
@@ -61,12 +60,9 @@ public final class MumbleLinkMod implements ClientModInitializer {
         this.client = client;
         startTime = Instant.now();
 
-        // register the mumble link provider
-        MumbleLinkModProvider.register(this);
-
         // enable the mumble loader events
-        mumbleLoader = new MumbleLoader(this);
-        mumbleLoader.enable();
+        MumbleLoader mumbleLoader = new MumbleLoader(client);
+        mumbleLoader.setup();
 
         // enable the mumble position ticker
         mumbleTicker = new MumbleTicker(mumbleLoader);
@@ -82,12 +78,6 @@ public final class MumbleLinkMod implements ClientModInitializer {
 
         // disable ticking
         mumbleTicker.disable();
-
-        // disable the mumble loader
-        mumbleLoader.disable();
-
-        // unregister provider
-        MumbleLinkModProvider.unregister();
 
         this.client = null;
         LOGGER.info("Goodbye!");
