@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "mumblelink",
-  "version": "${version}",
+  "version": "${modVersion}",
   "name": "MumbleLink",
   "icon": "assets/mumblelink/icon.png",
   "description": "A Minecraft mod that natively supports Mumble's positional audio feature.",
