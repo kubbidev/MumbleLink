@@ -62,6 +62,7 @@ tasks.processResources {
 }
 
 tasks.shadowJar {
+    duplicatesStrategy = DuplicatesStrategy.FAIL
     archiveFileName = "mumblelink-$version-dev.jar"
     mergeServiceFiles()
     dependencies {
