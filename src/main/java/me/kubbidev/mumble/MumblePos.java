@@ -5,7 +5,8 @@ import com.google.gson.JsonObject;
 import me.kubbidev.mumble.api.Key;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -34,13 +35,18 @@ public class MumblePos {
         this.loader = loader;
     }
 
-    public void update(ClientPlayerEntity clientPlayer) {
-        identity = getIdentity(clientPlayer);
+    public void update(MinecraftClient client, Entity clientEntity) {
+        identity = getIdentity(clientEntity);
         context = getContext();
 
-        Vec3d rotationVector = clientPlayer.getRotationVector();
-        Vec3d oppositeRotationVector = clientPlayer.getOppositeRotationVector(1.0F);
-        Vec3d pos = clientPlayer.getEntityPos();
+        Entity cameraEntity = client.getCameraEntity();
+        if (cameraEntity != null) { // In spectator
+            clientEntity = cameraEntity;
+        }
+
+        Vec3d rotationVector = clientEntity.getRotationVector();
+        Vec3d oppositeRotationVector = clientEntity.getOppositeRotationVector(1.0F);
+        Vec3d pos = clientEntity.getEntityPos();
 
         fAvatarFront = new float[]{
             (float) rotationVector.x,
@@ -76,16 +82,16 @@ public class MumblePos {
         };
     }
 
-    private String getIdentity(ClientPlayerEntity clientPlayer) {
+    private String getIdentity(Entity entity) {
         JsonObject identity = new JsonObject();
 
-        Text name = clientPlayer.getDisplayName();
+        Text name = entity.getDisplayName();
         if (name != null) {
             identity.addProperty(Key.Identity.NAME, name.getString());
         }
 
         JsonArray spawnCoordinates = new JsonArray();
-        SpawnPoint spawnPoint = clientPlayer.getEntityWorld().getSpawnPoint();
+        SpawnPoint spawnPoint = entity.getEntityWorld().getSpawnPoint();
 
         BlockPos spawnPos = spawnPoint.getPos();
         spawnCoordinates.add(spawnPos.getX());
@@ -96,7 +102,7 @@ public class MumblePos {
         identity.add(Key.Identity.WORLD_SPAWN, spawnCoordinates);
 
         // Append the dimension
-        RegistryKey<World> dimensionKey = clientPlayer.getEntityWorld().getRegistryKey();
+        RegistryKey<World> dimensionKey = entity.getEntityWorld().getRegistryKey();
         identity.addProperty(Key.Identity.DIMENSION, dimensionKey.toString());
 
         String string = identity.toString();

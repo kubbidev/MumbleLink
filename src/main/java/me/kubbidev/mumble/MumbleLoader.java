@@ -10,6 +10,7 @@ import me.kubbidev.mumble.exception.ExceptionManager;
 import me.kubbidev.mumble.loader.StructureLoader;
 import me.kubbidev.mumble.jna.LinkApiHelper;
 import me.kubbidev.mumble.jna.LinkApi;
+import org.jspecify.annotations.NonNull;
 
 @Environment(EnvType.CLIENT)
 public class MumbleLoader implements ClientTickEvents.EndTick {
@@ -50,12 +51,12 @@ public class MumbleLoader implements ClientTickEvents.EndTick {
     }
 
     @Override
-    public void onEndTick(MinecraftClient client) {
+    public void onEndTick(@NonNull MinecraftClient client) {
         if (!isMumbleConnected()) {
             return;
         }
         if (client.player != null) {
-            mumblePos.update(client.player);
+            mumblePos.update(client, client.player);
             mumblePos.propagate();
         }
     }
