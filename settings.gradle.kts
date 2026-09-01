@@ -17,7 +17,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             plugin("shadow", "com.gradleup.shadow").version("9.0.0-rc1")
-            plugin("loom", "fabric-loom").version("1.15-SNAPSHOT")
+            plugin("loom", "net.fabricmc.fabric-loom").version("1.17.20")
         }
     }
 }

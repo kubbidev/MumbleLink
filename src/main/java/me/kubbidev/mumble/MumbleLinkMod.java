@@ -1,18 +1,18 @@
 package me.kubbidev.mumble;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Optional;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public final class MumbleLinkMod implements ClientModInitializer {
@@ -31,21 +31,11 @@ public final class MumbleLinkMod implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     /**
-     * The time when the mod was enabled
-     */
-    private Instant         startTime;
-    /**
      * The Minecraft client instance
      */
-    private MinecraftClient client;
+    private @Nullable Minecraft    client;
     // init during enable
-    private MumbleTicker    mumbleTicker;
-
-    // provide adapters
-
-    public Instant getStartTime() {
-        return startTime;
-    }
+    private @Nullable MumbleTicker mumbleTicker;
 
     // lifecycle
 
@@ -56,9 +46,9 @@ public final class MumbleLinkMod implements ClientModInitializer {
         ClientLifecycleEvents.CLIENT_STOPPING.register(this::onClientStopping);
     }
 
-    private void onClientStarted(MinecraftClient client) {
+    private void onClientStarted(Minecraft client) {
         this.client = client;
-        startTime = Instant.now();
+        Instant startTime = Instant.now();
 
         // enable the mumble loader events
         MumbleLoader mumbleLoader = new MumbleLoader(client);
@@ -69,23 +59,25 @@ public final class MumbleLinkMod implements ClientModInitializer {
         mumbleTicker.enable();
 
         // successfully print the time taken when loading the mod!
-        Duration timeTaken = Duration.between(getStartTime(), Instant.now());
+        Duration timeTaken = Duration.between(startTime, Instant.now());
         LOGGER.info("Successfully enabled. (took {}ms)", timeTaken.toMillis());
     }
 
-    private void onClientStopping(MinecraftClient client) {
+    private void onClientStopping(Minecraft client) {
         LOGGER.info("Starting shutdown process...");
 
         // disable ticking
-        mumbleTicker.disable();
+        if (mumbleTicker != null) {
+            mumbleTicker.disable();
+        }
 
         this.client = null;
         LOGGER.info("Goodbye!");
     }
 
-    // MinecraftClient singleton getter
+    // Minecraft singleton getter
 
-    public Optional<MinecraftClient> getClient() {
+    public Optional<Minecraft> getClient() {
         return Optional.ofNullable(client);
     }
 }

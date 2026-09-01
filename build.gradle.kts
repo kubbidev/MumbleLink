@@ -1,4 +1,3 @@
-import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 apply("gradle/ver.gradle.kts")
@@ -25,9 +24,8 @@ repositories {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.21.11")
-    mappings("net.fabricmc:yarn:1.21.11+build.4:v2")
-    modImplementation("net.fabricmc:fabric-loader:0.18.4")
+    minecraft("com.mojang:minecraft:26.2")
+    implementation("net.fabricmc:fabric-loader:0.19.3")
 
     val apiModules = listOf(
         "fabric-api-base",
@@ -36,7 +34,7 @@ dependencies {
     )
 
     apiModules.forEach {
-        modImplementation(fabricApi.module(it, "0.141.3+1.21.11"))
+        implementation(fabricApi.module(it, "0.159.0+26.2"))
     }
 
     // Unit tests
@@ -58,25 +56,12 @@ tasks.processResources {
 
 tasks.shadowJar {
     duplicatesStrategy = DuplicatesStrategy.FAIL
-    archiveFileName = "mumblelink-$version-dev.jar"
+    archiveFileName = "MumbleLink-Fabric-$version.jar"
     mergeServiceFiles()
     dependencies {
         exclude("net.fabricmc:.*")
         include(dependency("me.kubbidev:.*"))
-
-        // We don't want to include the mappings in the jar do we?
-        exclude("/mappings/*")
     }
-}
-
-val remappedShadowJar by tasks.registering(RemapJarTask::class) {
-    dependsOn(tasks.shadowJar)
-
-    inputFile = tasks.shadowJar.flatMap {
-        it.archiveFile
-    }
-    addNestedDependencies = true
-    archiveFileName = "MumbleLink-Fabric-$version.jar"
 }
 
 tasks.publish {
@@ -102,7 +87,7 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.assemble {
-    dependsOn(remappedShadowJar)
+    dependsOn(tasks.shadowJar)
 }
 
 publishing {

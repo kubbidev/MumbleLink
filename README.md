@@ -1,9 +1,9 @@
-# MumbleLink (1.21.10)
+# MumbleLink (26.2)
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=for-the-badge)](https://github.com/RichardLitt/standard-readme)
 [![discord-banner](https://img.shields.io/discord/1258062506270654515?label=discord&style=for-the-badge&color=7289da)](https://discord.kubbidev.me)
 
-MumbleLink is a **Minecraft 1.21.10 mod** that natively supports **Mumble**'s positional audio feature.
+MumbleLink is a **Minecraft 26.2 mod** that natively supports **Mumble**'s positional audio feature.
 
 It is:
 
@@ -21,7 +21,7 @@ MumbleLink uses Gradle to handle dependencies & building.
 
 #### Requirements
 
-* Java 21 JDK or newer
+* Java 25 JDK or newer
 * Git
 
 #### Compiling from source

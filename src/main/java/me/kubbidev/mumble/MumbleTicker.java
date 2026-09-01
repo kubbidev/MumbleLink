@@ -3,7 +3,7 @@ package me.kubbidev.mumble;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 @Environment(EnvType.CLIENT)
 public class MumbleTicker implements ClientTickEvents.EndTick {
@@ -16,7 +16,7 @@ public class MumbleTicker implements ClientTickEvents.EndTick {
     }
 
     @Override
-    public void onEndTick(MinecraftClient client) {
+    public void onEndTick(Minecraft client) {
         if (enabled) {
             loader.onEndTick(client);
         }

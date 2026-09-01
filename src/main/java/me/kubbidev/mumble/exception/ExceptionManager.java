@@ -1,19 +1,19 @@
 package me.kubbidev.mumble.exception;
 
+import me.kubbidev.mumble.MumbleLinkMod;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import me.kubbidev.mumble.MumbleLinkMod;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.toast.ToastManager;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.gui.components.toasts.ToastManager;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class ExceptionManager implements ExceptionHandler {
 
-    private final MinecraftClient client;
+    private final Minecraft client;
 
-    public ExceptionManager(MinecraftClient client) {
+    public ExceptionManager(Minecraft client) {
         this.client = client;
     }
 
@@ -27,11 +27,11 @@ public class ExceptionManager implements ExceptionHandler {
         MumbleLinkMod.LOGGER.info("Init status: {} ({})", status.id(), status);
 
         if (status == InitStatus.LINKED) {
-            ToastManager toastManager = client.getToastManager();
+            ToastManager toastManager = client.gui.toastManager();
 
-            SystemToast.add(toastManager, SystemToast.Type.PERIODIC_NOTIFICATION,
-                Text.literal(MumbleLinkMod.MOD_CONTAINER.getMetadata().getName()),
-                Text.translatable("feature.mumblelink.status.toast.linked"));
+            SystemToast.add(toastManager, SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
+                Component.literal(MumbleLinkMod.MOD_CONTAINER.getMetadata().getName()),
+                Component.translatable("feature.mumblelink.status.toast.linked"));
         }
     }
 

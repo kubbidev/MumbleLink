@@ -3,19 +3,19 @@ package me.kubbidev.mumble;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.kubbidev.mumble.api.Key;
+import me.kubbidev.mumble.exception.ExceptionHandler;
+import me.kubbidev.mumble.jna.LinkApi;
+import me.kubbidev.mumble.jna.LinkApiHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import me.kubbidev.mumble.exception.ExceptionHandler;
-import me.kubbidev.mumble.jna.LinkApiHelper;
-import me.kubbidev.mumble.jna.LinkApi;
-import net.minecraft.world.WorldProperties.SpawnPoint;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.phys.Vec3;
 
 @Environment(EnvType.CLIENT)
 public class MumblePos {
@@ -35,7 +35,7 @@ public class MumblePos {
         this.loader = loader;
     }
 
-    public void update(MinecraftClient client, Entity clientEntity) {
+    public void update(Minecraft client, Entity clientEntity) {
         identity = getIdentity(clientEntity);
         context = getContext();
 
@@ -44,9 +44,9 @@ public class MumblePos {
             clientEntity = cameraEntity;
         }
 
-        Vec3d rotationVector = clientEntity.getRotationVector();
-        Vec3d oppositeRotationVector = clientEntity.getOppositeRotationVector(1.0F);
-        Vec3d pos = clientEntity.getEntityPos();
+        Vec3 rotationVector = clientEntity.getLookAngle();
+        Vec3 oppositeRotationVector = clientEntity.getUpVector(1.0F);
+        Vec3 pos = clientEntity.position();
 
         fAvatarFront = new float[]{
             (float) rotationVector.x,
@@ -85,15 +85,13 @@ public class MumblePos {
     private String getIdentity(Entity entity) {
         JsonObject identity = new JsonObject();
 
-        Text name = entity.getDisplayName();
-        if (name != null) {
-            identity.addProperty(Key.Identity.NAME, name.getString());
-        }
+        Component name = entity.getDisplayName();
+        identity.addProperty(Key.Identity.NAME, name.getString());
 
         JsonArray spawnCoordinates = new JsonArray();
-        SpawnPoint spawnPoint = entity.getEntityWorld().getSpawnPoint();
+        LevelData.RespawnData spawnPoint = entity.level().getRespawnData();
 
-        BlockPos spawnPos = spawnPoint.getPos();
+        BlockPos spawnPos = spawnPoint.pos();
         spawnCoordinates.add(spawnPos.getX());
         spawnCoordinates.add(spawnPos.getY());
         spawnCoordinates.add(spawnPos.getZ());
@@ -102,7 +100,7 @@ public class MumblePos {
         identity.add(Key.Identity.WORLD_SPAWN, spawnCoordinates);
 
         // Append the dimension
-        RegistryKey<World> dimensionKey = entity.getEntityWorld().getRegistryKey();
+        ResourceKey<Level> dimensionKey = entity.level().dimension();
         identity.addProperty(Key.Identity.DIMENSION, dimensionKey.toString());
 
         String string = identity.toString();
